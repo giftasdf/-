@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的音乐网</title>
+    <link href="css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+	<script src="js/jsrender.min.js"></script>
+	<style>
+	   #gc{   /* 歌词面板 */
+	    	width: 300px;
+	    	height: 430px;
+	    	/* border: 1px solid blue; 边框样式 */
+	    	 overflow: hidden;/* 溢出隐藏 */ 
+	   }
+	   .line{ /* 歌词样式 */
+	   
+	   		font-size:20px;
+	   		color:back;
+	   		text-align:center;
+	   		height:25px;
+	   		 text-shadow: 0 0 5px g; 
+	   		/* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 文本阴影 */  
+	   		position: relative;/* 相对定位，只有相对了定位，才能上下左右移动 */
+	   		
+	   		background:#000000 -webkit-linear-gradient(0deg,#33ff00 40%,#f78 60%) no-repeat 0 0;
+			-webkit-text-fill-color: transparent;
+			-webkit-background-clip: text;
+			background-size:0 100%;
+	   }
+	   .time{
+	    	display:none;/* 隐藏*/
+	   }
+	   .gcing{   /*正在播放歌词样式 */
+	   		font-size:22px;
+	   		background-size:100% 100%;
+	 	    animation: scan 2.5s linear;
+	   		
+	   }
+	   .bfrow{/* 播放行样式 */
+	   		background-color: transparent; 
+	   		animation:mymove 5s infinite;
+            -webkit-animation:mymove 6s infinite;
+	   } 	
+	   #bgvdo{                /* 视频背景 */
+	     	position: fixed;  /* 固定位置 */ 
+	     	left: 0px;
+	     	top: 0px;
+	     	z-index: -9999;   /*处于最底层 */
+	     	min-width:100%;
+	     	min-height:100%;
+	     	width:100%;
+	     	height:auto;
+	     	background-size:contain; /*全屏背景*/
+	     	opacity: 0.99; /* 降低背景图片的透明度，提高文本可读性 */  
+	        object-fit:fill;  
+	     	
+	   }
+	   
+	   @keyframes scan {
+			0% {background-size:0 100%;}
+			100% {	background-size:100% 100%;}
+	  }
+	    @keyframes mymove
+            {
+            0% { 
+                background: rgba(0,0,0,0.5);
+                color: #fff;
+            }
+            50% {
+                 background: rgba(255,255,255,0.5);
+                 color: #000;
+                }
+            100% {
+                 background:rgba(0,0,0,0.5);
+                 color: #fff;
+                }
+        }
+	  
+	</style>
+	
+		<script>
+		//全局变量
+		var bfid = 0;//正在播放歌曲的下标
+		
+		$(function(){
+			//请求search servlet获取响应结果
+			$.get("search",{key:"周杰伦"},function(d){//回调函数
+				let musics =  $.parseJSON(d);   //得到响应的字符串
+				let trs = $("#mb1").render(musics); //套用模版 
+				$("#tb").append(trs);
+			});
+			//搜索
+			$("[value = '搜索']").click(function(){
+				var key = $("#keyWord").val();//获取输入的文本  ，val是获取或设置输入的值
+				$("#tb tr:gt(0)").remove();//先删除原来的歌曲行
+				
+				$.get("search",{key:key},function(d){   //回调函数
+					let musics =  $.parseJSON(d);   //得到响应的字符串
+					let trs = $("#mb1").render(musics); //套用模版 
+					$("#tb").append(trs);
+				});
+			});
+		                               
+			//歌曲结束监听事件
+			var ado = document.getElementById("ado");
+			ado.onended =function(){
+			 	bfid++;//播放下标加1
+			 	$("[title='播放']").eq(bfid).click();//自动找到对应的播放按钮并点击
+			};
+		});
+		
+		
+	
+
+	    /* 歌词显示 */
+		function gc(id){        
+			$.get("gc",{id:id},function(d){  
+				var lrclist =$.parseJSON(d);//获取歌词列表，转为对象数组
+				
+				//套用模版
+				var divs = $("#mb2").render(lrclist);
+				
+				//将模版代码显示至div歌词内部
+				$("#gc").html(divs);
+				
+				//定时器，同步歌词
+				setInterval(function(){
+					//获取播放器当前的播放时间
+					var bfqtime =ado.currentTime.toFixed(0);
+					//获取所有歌词的时间（span标签)
+					var times =$(".time");
+					//循环歌词
+					$.each(times,function(i){
+						//获取歌词时间
+						var gctime = parseInt($(".time").eq(i).text());
+						
+						//判断是否同步
+						if(gctime>bfqtime){
+							$(".line").removeClass("gcing");
+							$(".line").eq(i-1).addClass("gcing");//当前播放歌词凸亮显示
+						
+							if(i>6){ //从第6句歌词开始往上滚
+								$(".line").animate({top:"-"+(i-6)*25+"px"});/* 所以得歌词向上移动25px */
+							}
+							return false;
+						}
+						
+					});
+				},1000);
+				
+			});
+		}
+		function play(id,index){
+			/* alert(id); 调试工具*/
+			//请求MP3 servlet 获取对应歌曲的路径
+			$.get("mp3",{id:id},function(d){  //data用来接受结果
+				var ado = document.getElementById("ado");//得到播放器
+				ado.src =d;  //设置播放地址
+				ado.play(); //播放
+				gc(id);
+				
+				//更新播放歌曲的下标
+				bfid = index-1;//更新正播放的歌曲的下标
+				$("#tb tr:gt(0)").removeClass("bfrow"); 
+				$("#tb tr:gt(0)").eq(bfid).addClass("bfrow"); //当前播放的行凸亮显示
+				
+			});
+			
+		}
+		
+		function mv(id){        /* 播放视频*/
+			$.get("Mv",{id:id},function(d){  //"Mv"是创建的servlet用来接受结果
+				var vdo = document.getElementById("vdo");//得到播放器
+				vdo.src =d;  //设置播放地址
+				vdo.play(); //播放
+				gc(id);
+			});
+		}
+		
+		   
+		</script>
+</head>
+<body>
+<div id="content">
+    <div id="div-top">
+        <div id="top-left">
+            ♫ ZkingPlayer
+        </div>
+        <div id="top-right">
+	            <input type="text" name="key" id="keyWord" placeholder="搜索歌手、歌名、专辑"/>
+	            <input type="submit" value="搜索">
+        </div>
+    </div>
+    <div id="div-main">
+        <div id="banner">
+            <img id="binnerImg" src="img/1.jpg" width="1000px">
+        </div>
+        <div id="main-left">
+            <table id="tb" width="100%" cellpadding="4px" style="text-align: left;">
+				<thead>
+					<tr>
+						<th style="width: 50px;">&nbsp;序号</th>
+						<th style="width: 200px;">歌曲</th>
+						<th style="width: 80px;">歌手</th>
+						<th style="width: 60px;">时长</th>
+						<th style="width: 150px;">操作</th>
+					</tr>
+                </thead>
+				<tbody>
+               	
+                </tbody>
+            </table>
+        </div>
+        <div id="main-right">
+        	<audio width="300px" id="ado" src="" controls></audio><br/>
+        	<video width="300px" id="vdo" src="" controls></video>
+        	<div id ="gc"> 歌词列表</div>
+        	
+        </div>
+    </div>
+</div>    
+<!-- loop循环播放。muted静音，autoplay 自动播放 -->
+<video id = "bgvdo" src="img/linya.mp4" loop ="loop" muted = "muted" autoplay="autoplay"></video>        
+</body>
+		<script type="text/x-jsrender" id ="mb1">
+	<tr class="tl">
+	     <td>{{:#index+1}}</td>   
+	     <td>
+			{{if NAME.length>7}}
+				{{:NAME.substring(0,7)}}
+			{{else}}
+				{{:NAME}}
+			{{/if}}
+		</td>
+
+	     <td>
+			{{if ARTIST.length>7}}
+				{{:ARTIST.substring(0,7)}}
+			{{else}}
+				{{:ARTIST}}
+			{{/if}}
+		</td>
+	     <td>{{:(DURATION/60).toFixed(2)}}</td>
+	     <td>
+	     <img title='播放' width='20px' src='img/play.jpg' onclick="play({{:DC_TARGETID}},{{:#index+1}})"/>&nbsp;
+ 		 {{if MVFLAG=='1'}}
+	     <img title='视频' width='20px' src='img/mv.png'  onclick="mv({{:DC_TARGETID}})"/>
+		 {{/if}}
+	     </td>
+	</tr>
+	</script>
+	<!-- 歌词模版 -->
+	<script type="text/x-jsrender" id = "mb2">
+       	 <div class = "line">{{:lineLyric}}<span class="time">{{:time}}</span> </div>
+	</script>
+</html>
+
+
