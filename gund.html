@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- 适应性缩放 -->
+	<title>滚动图片样式</title>
+	<style>
+	
+        body {    /* 定义网页主体的样式。 */
+            font-family: Arial, sans-serif;
+            margin: 0; /* margin: 0;：去除默认的外边距。padding: 0;：去除默认的内边距 */
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .slider {
+            position: relative; /* 设置定位为相对定位，以便其子元素可以使用绝对定位。 */
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            overflow: hidden; /*隐藏溢出的内容，防止滑动时出现滚动条 */
+        }
+        .slides {
+            display: flex;/* 使用flex布局，子元素会按水平排列 */
+            transition: transform 0.5s ease-in-out;/* 设置滑动的过渡动画，持续0.5秒，效果为ease-in-out。 	 */
+        }
+        .slide {
+            min-width: 100%;/* 设置最小宽度为100%，每个滑动图片占满整个容器 */
+            box-sizing: border-box;/* 设置盒模型 */
+        }
+        .slide img { /* 定义滑动图片内部的图片样式。 */
+            width: 100%;
+            vertical-align: middle;
+        }
+        .navigation {   /* 按钮盒子样式 */
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%); /* 使用translateY使导航容器垂直居中 */
+            display: flex;
+            justify-content: space-between; /* 在子元素之间留出空间，使其分布在容器的两端 */
+            box-sizing: border-box;
+            padding: 0 20px; /* 在左右两侧添加20px的内边距。 */
+        }
+        .nav-button { /* 按钮样式 */
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;/* 设置鼠标悬停时的光标为指针 */
+            padding: 10px;
+        }
+        .pagination { /* 点盒子样式 */
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .pagination-dot {/* 点样式 */
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;/* 设置边框半径为50%，使其成为圆形。 */
+            display: inline-block;
+            cursor: pointer;
+        }
+        .pagination-dot.active { /* 定义当前活动分页点的样式。 */
+            background-color: white;
+        }
+ 
+
+	</style>
+		
+	</head>
+	
+	<body>
+		<div class = "slider">
+			<div class="slides">
+					<div class="slide"><img alt="imge1" src="img/1.jpg"></div>
+					<div class="slide"><img alt="imge2" src="img/2.jpg"></div>
+					<div class="slide"><img alt="imge3" src="img/3.jpg"></div>
+					<div class="slide"><img alt="imge4" src="img/4.jpg"></div>
+					<div class="slide"><img alt="imge5" src="img/5.jpg"></div>
+			</div>
+			
+			<div class="navigation">  <!-- 导航按钮 -->
+           	 		<button class="nav-button prev">❮</button>
+           			<button class="nav-button next">❯</button>
+      		</div>		
+      		
+      		<div class="pagination">  <!-- 包含小圆点，用于指示当前的幻灯片。 -->
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+        	</div>
+        	
+		</div>	
+			
+		<script>
+       		 const slides = document.querySelector('.slides');
+       		 const slide = document.querySelectorAll('.slide'); //选择所有.slide元素并存储在slide变量中。
+      		 const nextButton = document.querySelector('.next');//下一页
+        	 const prevButton = document.querySelector('.prev');//上一页的变量
+        	 const dots = document.querySelectorAll('.pagination-dot');//选择所有分页点并存储在dots变量中。
+
+       		 let currentIndex = 0;  //初始化为0
+       	 	 const totalSlides = slide.length; //图片的总数
+        	 const slideWidth = slide[0].clientWidth; //每张图片的宽度
+
+        // 自动滑动功能
+        let autoSlide = setInterval(nextSlide, 3000); //每3秒自动滑动
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider(); //更新图片
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function updateSlider() {/* transform 变换，使用反引号（``）创建模板字符串，可以在字符串中嵌入表达式 */
+            slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`; //slides盒子 计算id*width(宽度)px,将图片水平移动
+            updateDots();                                                          //translateX 是一种2D变换，用于沿 X 轴平移元素。
+            
+        }
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex); //更新点dot
+            });
+        }
+
+        nextButton.addEventListener('click', () => { //下一页点击事件
+            clearInterval(autoSlide);           //清除自动滑动
+            nextSlide();                        //下一页
+            autoSlide = setInterval(nextSlide, 3000); //启动自动滑动 setInterval 计时器
+        });
+
+        prevButton.addEventListener('click', () => {//上一页点击事件
+            clearInterval(autoSlide);
+            prevSlide();
+            autoSlide = setInterval(nextSlide, 3000);
+        });
+
+        dots.forEach((dot, index) => {          //dots是一个数组，forEach它用于遍历数组中的每个元素，并对每个元素执行指定的操作。
+            dot.addEventListener('click', () => {
+                clearInterval(autoSlide);
+                currentIndex = index;           //获取当前点的下标赋值给currentIndex
+                updateSlider();                 //更新到对应的界面
+                autoSlide = setInterval(nextSlide, 3000);
+            });
+        });
+
+        updateSlider(); //初始化
+    </script>
+	</body>
+		
+	</html>
