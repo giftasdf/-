@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Player Control</title>
+<style>
+    /* 盒子容器 */
+    .box {
+        width: 1600px;
+        height: auto;
+        background-color: #f0f0f0;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    /* 音乐播放器容器 */
+    .music-player-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0;
+        transition: opacity 1s ease; /* 过渡效果 */
+    }
+
+    /* 当鼠标悬停在盒子上时显示音乐播放器 */
+    .box:hover .music-player-container {
+        opacity: 1;
+    }
+</style>
+</head>
+<body>
+    <!-- 盒子容器 -->
+    <div class="box">
+        <!-- 音乐播放器容器 -->
+        <div class="music-player-container">
+            <!-- 在此添加你的音乐播放器代码 -->
+            <audio controls autoplay>
+                <source src="img/228908.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+</body>
+</html>
