@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 样式区 -->
+		<style type="text/css">
+			
+			html,body{
+				height: 150%;
+			}
+			body{
+				border: 0px solid red;
+				margin: 0;
+			}
+			#bgvdo
+			      {
+			      position: fixed;
+			      left:0px;
+			      top:0px;
+			      z-index: -100;
+			      min-width: 100%;
+			      min-height: 100%;
+			      width:100%;
+			      height:auto;
+			      background-size:cover;
+			      }
+			#d1{/* 主容器元素d1，设置为flex容器，指定方向是上下排列 */
+				display: flex;
+				height: 100%;
+				border: 0px solid lightgray;
+				flex-direction: column;
+				text-align: center;
+			}
+			#d2{
+				display: flex;
+				height: 50px;
+				width:auto;
+				border: 0px solid whitesmoke;
+				background-color: lightpink;
+				flex-direction: row;/* 对齐方式 */
+				justify-content: space-between;
+				align-items: center;
+				font-size: 22px;
+			}
+			#dd{
+				display: flex;
+				width: 100%;
+				justify-content: center;
+				align-items: center;
+			}
+			#d3{/* d3为容器内元素，让其自动增长，有多少空间就占据多少空间 */
+				width: 70%;
+				overflow: overlay;
+				background-color: rgba(1,1,1,0);
+				
+			}
+			#d4{/* 给d4指定一个固定的高度，d234共同占据cross轴空间，d3剩下的全部*/
+				display: flex;
+				height: 200px;
+				border: 5px solid whitesmoke;
+				background-color: gray;
+				flex-direction: row;
+				justify-content: space-evenly;
+				align-items: center;
+				font-size: 18px;
+			}
+			#d5{
+				display: flex;
+				flex-direction: row;
+				justify-content: space-evenly;
+				align-items: center;
+			}
+			#kg{
+				height: 30px;
+			}
+			#bt{
+				height: 30px;
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				font-size: 25px;
+			}
+			#gd{
+				width: 180px;
+				height: 180px;
+				background-color: aquamarine;
+				
+			}
+			#gm{
+				width: 180px;
+				height: 50px;
+				text-align: left;
+			}
+			#phb{
+				width: 180px;
+				height: 350px;
+				background-color: aqua;
+			}
+			
+                /* 图片滚动模块 */
+			.slider {
+			
+            	position: relative; /* 设置定位为相对定位，以便其子元素可以使用绝对定位。 */
+            	width: 100%;
+            	max-width: 1000px;
+            	margin: auto;
+            	overflow: hidden; /*隐藏溢出的内容，防止滑动时出现滚动条 */
+         	}
+           .slides {
+           	 	display: flex;/* 使用flex布局，子元素会按水平排列 */
+            	transition: transform 0.5s ease-in-out;/* 设置滑动的过渡动画，持续0.5秒，效果为ease-in-out。 	 */
+       		 }
+           .slide {
+            	min-width: 100%;/* 设置最小宽度为100%，每个滑动图片占满整个容器 */
+            	box-sizing: border-box;/* 设置盒模型 */
+       		}
+           .slide img { /* 定义滑动图片内部的图片样式。 */
+            	width: 100%;
+            	vertical-align: middle;
+        	}
+           .navigation {   /* 按钮盒子样式 */
+            	position: absolute;
+            	width: 100%;
+            	top: 50%;
+            	transform: translateY(-50%); /* 使用translateY使导航容器垂直居中 */
+            	display: flex;
+            	justify-content: space-between; /* 在子元素之间留出空间，使其分布在容器的两端 */
+            	box-sizing: border-box;
+            	padding: 0 20px; /* 在左右两侧添加20px的内边距。 */
+        	}
+           .nav-button { /* 按钮样式 */
+             	background-color: rgba(0, 0, 0, 0.5);
+            	border: none;
+           	 	color: white;
+            	font-size: 18px;
+            	cursor: pointer;/* 设置鼠标悬停时的光标为指针 */
+            	padding: 10px;
+        	}
+           .pagination { /* 点盒子样式 */
+            	position: absolute;
+            	bottom: 10px;
+            	width: 100%;
+            	display: flex;
+            	justify-content: center;
+        	}
+           .pagination-dot {/* 点样式 */
+            	height: 10px;
+            	width: 10px;
+            	margin: 0 5px;
+            	background-color: rgba(0, 0, 0, 0.5);
+            	border-radius: 50%;/* 设置边框半径为50%，使其成为圆形。 */
+            	display: inline-block;
+            	cursor: pointer;
+        	}
+           .pagination-dot.active { /* 定义当前活动分页点的样式。 */
+            	background-color: white;
+        	}
+        	/* 时间显示 */
+        	.clock {
+            	font-size: 10px;
+            	padding: 10px;
+            	-webkit-background-clip: text;
+            	border: 1px solid #ccc;
+            	border-radius: 5px;
+            	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        	}
+        
+		</style>
+		
+		
+	</head>
+	<body>
+	
+		<video id="bgvdo" src="img/beijin.mp4" loop="loop" muted="muted" autoplay="autoplay" class="bg"></video>
+		
+		
+		
+		
+		<div id="d1">
+			<div id="d2">
+				<div>logo</div>
+				<div>发现音乐</div>
+				<a href="index.html">我的喜欢</a>
+				<a href="index.html">VIP音乐</a>
+				<a href="index.html">登录/注册</a>
+				<a href ="index.html">VIP</a>
+				<div>
+					<input type="text" name="key" id="keyWord" placeholder="搜索歌手、歌名、专辑"/>
+					<input type="button" value="搜索">
+				</div>
+			</div>
+			<div id="d2">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div style="font-size: 15px;">推荐</div>
+				<div style="font-size: 15px;">排行榜</div>
+				<div style="font-size: 15px;">歌单</div>
+				<div style="font-size: 15px;">歌手</div>
+				<div class="clock" id="clock"></div>
+			</div>
+			<div class = "slider">
+			<div class="slides">
+					<div class="slide"><img alt="imge1" src="img/1.jpg"></div>
+					<div class="slide"><img alt="imge2" src="img/2.jpg"></div>
+					<div class="slide"><img alt="imge3" src="img/3.jpg"></div>
+					<div class="slide"><img alt="imge4" src="img/4.jpg"></div>
+					<div class="slide"><img alt="imge5" src="img/5.jpg"></div>
+			</div>
+			
+			<div class="navigation">  <!-- 导航按钮 -->
+           	 		<button class="nav-button prev">❮</button>
+           			<button class="nav-button next">❯</button>
+      		</div>		
+      		
+      		<div class="pagination">  <!-- 包含小圆点，用于指示当前的幻灯片。 -->
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+            		<span class="pagination-dot"></span>
+        	</div>
+        	
+		</div>	
+				<div id="dd">
+					<div id="d3">
+						<div id="kg"></div>
+						<div id="bt">
+							<div><pre>  推荐歌单    <span style="font-size: 18px;">每日推荐 | 流行 | 欧美 | 民谣</span></pre></div>
+							<div style="font-size: 15px; color: darkgray;">更多>></div>
+						</div>
+						<div style="height: 15px;"></div>
+						<hr color="black" style="height: 1px;"/>
+						<div id="kg"></div>
+						<div id="d5"><!-- 推荐歌单 -->
+							<div></div>
+							<div id="gd">1</div>
+							<div id="gd">2</div>
+							<div id="gd">3</div>
+							<div id="gd">4</div>
+							<div id="gd">5</div>
+							<div></div>
+						</div >
+						<div id="d5">
+							<div></div>
+							<div id="gm">2024全网超好听的热门流行歌曲推荐</div>
+							<div id="gm">2</div>
+							<div id="gm">3</div>
+							<div id="gm">4</div>
+							<div id="gm">5</div>
+							<div></div>
+						</div >
+						<div id="d5"><!-- 推荐歌单 -->
+							<div></div>
+							<div id="gd">1</div>
+							<div id="gd">2</div>
+							<div id="gd">3</div>
+							<div id="gd">4</div>
+							<div id="gd">5</div>
+							<div></div>
+						</div >
+							<div id="d5">
+								<div></div>
+								<div id="gm">2024全网超好听的热门粤语歌曲推荐</div>
+								<div id="gm">2</div>
+								<div id="gm">3</div>
+								<div id="gm">4</div>
+								<div id="gm">5</div>
+								<div></div>
+							</div >
+							<div id="bt">
+								<div><pre>  排行榜      <span style="font-size: 18px;">每日推荐 | 流行 | 欧美 | 民谣</span></pre></div>
+								<div style="font-size: 15px; color: darkgray;">更多>></div>
+							</div>
+							<div style="height: 15px;"></div>
+							<hr color="black" style="height: 1px;"/>
+						<div id="d5"><!-- 排行榜 -->
+							<div id="phb">1</div>
+							<div id="phb">2</div>
+							<div id="phb">3</div>
+							<div id="phb">4</div>
+							<div id="phb">5</div>
+							
+						</div>
+					</div>
+				</div>
+				<div id="d4">
+					<div><li>湖南人文科技学院©1997-2099</li>
+						<li>软件工程22级</li>
+						<li>违法和不良信息举报电话：6666-88888</li>
+						<li>投诉邮箱：XXXXX@qq.com</li>
+						<li>湘K-20240606</li></div>
+					<div><li>服务条款</li>
+						<li>隐私政策</li>
+						<li>儿童隐私政策</li>
+						<li>版权投诉指引</li>
+						<li>意见反馈</li></div>
+				</div>
+		</div>
+		<!-- 脚本区 -->
+				<script>
+       		 const slides = document.querySelector('.slides');
+       		 const slide = document.querySelectorAll('.slide'); //选择所有.slide元素并存储在slide变量中。
+      		 const nextButton = document.querySelector('.next');//下一页
+        	 const prevButton = document.querySelector('.prev');//上一页的变量
+        	 const dots = document.querySelectorAll('.pagination-dot');//选择所有分页点并存储在dots变量中。
+
+       		 let currentIndex = 0;  //初始化为0
+       	 	 const totalSlides = slide.length; //图片的总数
+        	 const slideWidth = slide[0].clientWidth; //每张图片的宽度
+
+        // 自动滑动功能
+        let autoSlide = setInterval(nextSlide, 3000); //每3秒自动滑动
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider(); //更新图片
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function updateSlider() {/* transform 变换，使用反引号（``）创建模板字符串，可以在字符串中嵌入表达式 */
+            slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`; //slides盒子 计算id*width(宽度)px,将图片水平移动
+            updateDots();                                                          //translateX 是一种2D变换，用于沿 X 轴平移元素。
+            
+        }
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex); //更新点dot
+            });
+        }
+
+        nextButton.addEventListener('click', () => { //下一页点击事件
+            clearInterval(autoSlide);           //清除自动滑动
+            nextSlide();                        //下一页
+            autoSlide = setInterval(nextSlide, 3000); //启动自动滑动 setInterval 计时器
+        });
+
+        prevButton.addEventListener('click', () => {//上一页点击事件
+            clearInterval(autoSlide);
+            prevSlide();
+            autoSlide = setInterval(nextSlide, 3000);
+        });
+
+        dots.forEach((dot, index) => {          //dots是一个数组，forEach它用于遍历数组中的每个元素，并对每个元素执行指定的操作。
+            dot.addEventListener('click', () => {
+                clearInterval(autoSlide);
+                currentIndex = index;           //获取当前点的下标赋值给currentIndex
+                updateSlider();                 //更新到对应的界面
+                autoSlide = setInterval(nextSlide, 3000);
+            });
+        });
+
+        updateSlider(); //初始化
+        
+        //时钟脚本
+         function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const formattedTime = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = formattedTime;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+	</body>
+</html>
